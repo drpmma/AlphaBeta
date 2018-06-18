@@ -4,6 +4,8 @@ import Home from './views/Home.vue'
 import About from './views/About.vue'
 import Signin from './views/Signin.vue'
 import Signup from './views/Signup.vue'
+import Profile from './views/Profile.vue'
+import Select from './views/Select.vue'
 import Cookie from '@/client/cookie'
 Vue.use(Router)
 
@@ -30,14 +32,23 @@ const router = new Router({
       path: '/signup',
       name: 'signup',
       component: Signup
-    }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile
+    },
+    {
+      path: '/select',
+      name: 'select',
+      component: Select
+    },
   ]
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to.fullPath)
+  const user = Cookie.get('username')
   if (to.fullPath === '/signin') {  // 判断该路由是否需要登录权限
-    const user = Cookie.get('username')
       if (user) {  // 通过vuex state获取当前的token是否存在
           next({
             path: '/home',

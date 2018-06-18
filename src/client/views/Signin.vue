@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import Cookie from '@/client/cookie'
 
 export default {
   data() {
@@ -56,14 +55,13 @@ export default {
         if (valid) {
           this.$http
             .post("/api/user", {
-				username: this.$data.ruleForm.account,
-				password: this.$data.ruleForm.pass
+                username: this.$data.ruleForm.account,
+                password: this.$data.ruleForm.pass
             })
             .then(response => {
-				Cookie.set('username', this.$data.ruleForm.account, 1000*60)
-				this.$store.commit("login", this.$data.ruleForm.account)
-				this.$router.push({path: "/home", query: {user: this.$data.ruleForm.account}});
-				console.log(response);
+                this.$store.commit("login", this.$data.ruleForm.account)
+                this.$router.push({path: "/home"});
+                console.log(response);
             })
             .catch(error => {
 				console.log(error);

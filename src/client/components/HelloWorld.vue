@@ -6,8 +6,6 @@
 </template>
 
 <script>
-import Cookie from "@/client/cookie"
-
 export default {
   name: 'HelloWorld',
   props: {
@@ -24,7 +22,6 @@ export default {
       });
     },
     logout() {
-      Cookie.delete('username')
       this.$store.commit("logout")
       this.$router.push('/signin')
     }
