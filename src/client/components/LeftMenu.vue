@@ -5,7 +5,7 @@
       :default-active="defaultActive"
       class="el-menu-vertical-demo"
       :collapse="isCollapse">
-      <el-menu-item index="1" @click="NavigateTo('/Select')">
+      <el-menu-item index="1" @click="this.$router.push('/Home')">
         <i class="el-icon-check"></i>
         <span slot="title">学习</span>
       </el-menu-item>
@@ -44,9 +44,6 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
-    NavigateTo(path) {
-        this.$router.push(path)
-    }
   }
 };
 </script>

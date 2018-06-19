@@ -1,19 +1,23 @@
 <template>
-<el-card class="box-card" shadow="hover">
+<el-card class="box-card vocab-card" shadow="hover">
   <div slot="header" class="clearfix">
     <span>{{name}}</span>
-    <el-button style="float: right; padding: 3px 0" type="text">选择</el-button>
+    <el-button style="float: right; padding: 3px 0" type="text" @click="startLearning">选择</el-button>
   </div>
-  <div v-for="o in ['a', 'b']" :key="o" class="text item">
-    {{'列表内容 ' + o }}
-  </div>
+  <p>{{intro}}</p>
 </el-card>
 </template>
 
 <script>
 export default {
   props: {
-    name: String
+    name: String,
+    intro: String
+  },
+  methods: {
+    startLearning() {
+      
+    }
   }
 };
 </script>
@@ -37,20 +41,22 @@ export default {
   clear: both;
 }
 
-.box-card {
+.vocab-card {
   float: left;
   text-align: left;
-  margin-left: 20px;
-  margin-bottom: 20px;
+  margin-left: 1em;
+  margin-bottom: 1em;
 }
 
 @media screen and (max-width: 400px) {
-  .box-card {
+  .vocab-card{
+    height: 15em;
     width: 70%;
   }
 }
 @media screen and (min-width: 400px) {
-  .box-card {
+  .vocab-card {
+    height: 15em;
     width: 25%;
   }
 }

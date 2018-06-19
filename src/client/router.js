@@ -5,7 +5,6 @@ import About from './views/About.vue'
 import Signin from './views/Signin.vue'
 import Signup from './views/Signup.vue'
 import Profile from './views/Profile.vue'
-import Select from './views/Select.vue'
 import Cookie from '@/client/cookie'
 Vue.use(Router)
 
@@ -37,11 +36,6 @@ const router = new Router({
       path: '/profile',
       name: 'profile',
       component: Profile
-    },
-    {
-      path: '/select',
-      name: 'select',
-      component: Select
     },
   ]
 })

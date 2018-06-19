@@ -75,11 +75,12 @@ export default {
               password: this.$data.ruleForm.pass,
               passwordConf: this.$data.ruleForm.checkPass
             })
-            .then(function(response) {
-              this.$router.push('/home')
+            .then(response => {
+              this.$store.commit("login", this.$data.ruleForm.account);
+              this.$router.push({ path: "/home" });
               console.log(response)
             })
-            .catch(function(error) {
+            .catch(error => {
               console.log(error);
             });
         } else {

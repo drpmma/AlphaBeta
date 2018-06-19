@@ -1,8 +1,8 @@
 <template>
 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-  <el-menu-item index="1" @click="NavigateTo('/home')">AlphaBeta</el-menu-item>
-  <el-menu-item index="2" @click="NavigateTo('/about')">关于</el-menu-item>
-  <el-menu-item v-if="this.$store.state.token" class="right" index="3" >{{this.$store.state.token}}</el-menu-item>
+  <el-menu-item index="1" @click="this.$router.push('/home')">AlphaBeta</el-menu-item>
+  <el-menu-item index="2" @click="this.$router.push('/about')">关于</el-menu-item>
+  <el-menu-item v-if="this.$store.state.token" class="right" index="3" @click="this.$router.push('/profile')">{{this.$store.state.token}}</el-menu-item>
 </el-menu>
 </template>
 
@@ -18,9 +18,6 @@
       handleSelect(key, keyPath) {
         console.log(key, keyPath)
       },
-      NavigateTo(route) {
-        this.$router.push({path:route})
-      }
     },
     created: function() {
       if (this.$store.state.token === null)

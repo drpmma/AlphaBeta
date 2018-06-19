@@ -20,7 +20,6 @@
 </template>
 
 <script>
-
 export default {
   data() {
     const checkAccount = (rule, value, callback) => {
@@ -55,16 +54,16 @@ export default {
         if (valid) {
           this.$http
             .post("/api/user", {
-                username: this.$data.ruleForm.account,
-                password: this.$data.ruleForm.pass
+              username: this.$data.ruleForm.account,
+              password: this.$data.ruleForm.pass
             })
             .then(response => {
-                this.$store.commit("login", this.$data.ruleForm.account)
-                this.$router.push({path: "/home"});
-                console.log(response);
+              this.$store.commit("login", this.$data.ruleForm.account);
+              this.$router.push({ path: "/home" });
+              console.log(response);
             })
             .catch(error => {
-				console.log(error);
+              console.log(error);
             });
         } else {
           console.log("error submit!!");

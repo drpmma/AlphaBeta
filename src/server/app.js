@@ -2,13 +2,13 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
-const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
+// const session = require('express-session');
+// const MongoStore = require('connect-mongo')(session);
 
 
 const app = express()
 //connect to MongoDB
-mongoose.connect('mongodb://localhost/testForAuth');
+mongoose.connect('mongodb://localhost/alphabeta');
 const db = mongoose.connection;
 
 //handle mongo error
@@ -17,14 +17,14 @@ db.once('open', () => {
     console.log("connected!")
 });
 
-app.use(session({
-    secret: 'work hard',
-    resave: true,
-    saveUninitialized: false,
-    store: new MongoStore({
-        mongooseConnection: db
-    })
-}));
+// app.use(session({
+//     secret: 'work hard',
+//     resave: true,
+//     saveUninitialized: false,
+//     store: new MongoStore({
+//         mongooseConnection: db
+//     })
+// }));
 
 
 app.use(bodyParser.json())
