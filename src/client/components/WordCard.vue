@@ -1,10 +1,11 @@
 <template>
-<el-card class="box-card vocab-card" shadow="hover">
+<el-card class="box-card word-card" shadow="hover">
   <div slot="header" class="clearfix">
     <span>{{name}}</span>
-    <el-button style="float: right; padding: 3px 0" type="text" @click="startLearning">选择</el-button>
   </div>
-  <p>{{intro}}</p>
+     <div v-for="intros in intro" :key="intros">
+        <el-button class="select-item" plain>{{intros}}</el-button>
+    </div>
 </el-card>
 </template>
 
@@ -12,18 +13,27 @@
 export default {
   props: {
     name: String,
-    intro: String
+    intro: Array
   },
-  methods: {
-    startLearning() {
-      this.$router.push('/study')
-    }
-  }
+//   methods: {
+//     startLearning() {
+//       console.log(this.$props.name)
+//     }
+//   }
 };
 </script>
 
 
 <style>
+
+.select-item{
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal !important;
+    width: 100%;
+    height: 6em;
+}
+
 .text {
   font-size: 14px;
 }
@@ -41,13 +51,12 @@ export default {
   clear: both;
 }
 
-.vocab-card {
-  float: left;
-  text-align: left;
-  margin-left: 1em;
+.word-card {
+  margin-left: 4.5em;
   margin-bottom: 1em;
 }
 
+/*
 @media screen and (max-width: 400px) {
   .vocab-card{
     height: 15em;
@@ -59,5 +68,5 @@ export default {
     height: 15em;
     width: 25%;
   }
-}
+} */
 </style>
