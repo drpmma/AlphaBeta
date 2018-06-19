@@ -5,7 +5,7 @@
       :default-active="defaultActive"
       class="el-menu-vertical-demo"
       :collapse="isCollapse">
-      <el-menu-item index="1" @click="this.$router.push('/Home')">
+      <el-menu-item index="1" @click="NavigateTo('/Home')">
         <i class="el-icon-check"></i>
         <span slot="title">学习</span>
       </el-menu-item>
@@ -34,7 +34,7 @@ export default {
       isCollapse: document.body.clientWidth < 400
     };
   },
-    props: {
+  props: {
     defaultActive: String
   },
   methods: {
@@ -44,6 +44,9 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
+    NavigateTo(route) {
+      this.$router.push({ path: route });
+    }
   }
 };
 </script>
@@ -53,9 +56,9 @@ export default {
   text-align: center;
 }
 .el-row::after {
-    clear:none !important;
+  clear: none !important;
 }
 .left-items {
-    height:1000px;
+  height: 1000px;
 }
 </style>
