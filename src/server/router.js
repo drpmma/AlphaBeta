@@ -23,7 +23,22 @@ router.get('/word', (req, res) => {
 	})
 	.exec((err, data) => {
 		if (err) return console.log(err)
-		else res.json(learnWord(data.words))
+		else {
+			let word = learnWord(data.words)
+			Vocab.count().exec((err, count) => {
+				let random = Math.floor(Math.random() * count)
+				if (random + 3 > count) {
+					random = random - 3
+				}
+				Vocab.find({_id:{$ne: word._id}}).skip(random).limit(3).exec((err, data) => {
+					let falseValue = []
+					for (const item of data) {
+						falseValue.push({value: item.value, id: item._id})
+					}
+					res.json({word, falseValue})
+				})
+			})
+		}
 	})
 })
 

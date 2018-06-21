@@ -6,6 +6,7 @@ function getRandomInt(min, max) {
 
 function learnWord(data) {
     let last = -10000, index = 0, range = 0;
+    const length = data.length
     for (let word of data) {
         word.learn = word.falseNumber - word.trueNumber
         if (range == 0 && last < word.learn)
@@ -14,7 +15,7 @@ function learnWord(data) {
         index++;
     }
     if (range == 0) 
-        range = 10
+        range = getRandomInt(1, length)
     data.sort((a, b) => {
         return b.learn - a.learn
     })
