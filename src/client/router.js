@@ -6,6 +6,7 @@ import About from './views/About.vue'
 import Signin from './views/Signin.vue'
 import Signup from './views/Signup.vue'
 import Profile from './views/Profile.vue'
+import SelectVocab from './views/SelectVocab.vue'
 import Cookie from '@/client/cookie'
 Vue.use(Router)
 
@@ -16,12 +17,11 @@ const router = new Router({
     {
       path: '/home',
       name: 'home',
-      component: Home
-    },
-    {
-      path: '/study',
-      name: 'study',
-      component: Study
+      component: Home,
+      children: [
+        {path: '', component: SelectVocab},
+        {path: 'study', component: Study}
+      ]
     },
     {
       path: '/about',
@@ -48,13 +48,25 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const user = Cookie.get('username')
+  const dic = Cookie.get('lastdic')
+  let query = {}
   if (user) {
-    next()
+    query.user = user
+    if (to.path == '/home/study' && dic) {
+      query.dic = dic
+    }
+    if (Object.keys(to.query).length === 0) {
+      next({
+        path: to.fullPath,
+        query: query
+      })
+    }
+    else {
+      next()
+    }
   }
   else {
-    console.log(111)
     if (to.path !== '/signin' && to.path !== '/signup') {
-      console.log(122211)
       next({
         path: '/signin',
         query: {redirect: to.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
@@ -64,24 +76,6 @@ router.beforeEach((to, from, next) => {
       next()
     }
   }
-
-  // if (to.fullPath === '/signin') {  // 判断该路由是否需要登录权限
-  //     if (user) {  // 通过vuex state获取当前的token是否存在
-  //         next({
-  //           path: '/home',
-  //           query: {user: user}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
-  //         });
-  //     }
-  //     else {
-  //         next({
-  //             path: '/signin',
-  //             query: {redirect: to.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
-  //         })
-  //     }
-  // }
-  // else {
-  //     next();
-  // }
 })
 
 export default router;

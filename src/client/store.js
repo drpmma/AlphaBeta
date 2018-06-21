@@ -6,16 +6,21 @@ Vue.use(Vuex);
 let store = new Vuex.Store({
     state: {
         user: {},
-        token: null
+        token: null,
+        dic: null
     },
     mutations: {
-        ["login"]: (state, data) => {
+        login: (state, data) => {
             state.token = data
             Cookie.set('username', data, 1000*60)
         },
-        ["logout"]: (state) => {
+        logout: (state) => {
             state.token = null
             Cookie.delete('username')
+        },
+        saveDic: (state, data) => {
+            state.dic = data
+            Cookie.set('lastdic', data, 1000*60)
         }
     }
 })

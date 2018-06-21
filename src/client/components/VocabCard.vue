@@ -16,7 +16,8 @@ export default {
   },
   methods: {
     startLearning() {
-      this.$router.push('/study')
+      this.$store.commit('saveDic', this.$props.name)
+      this.$router.push({path:'/home/study', query:{user: this.$store.state.token, dic:this.$props.name}})
     }
   }
 };

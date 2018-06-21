@@ -8,6 +8,10 @@ router.get('/', (req, res) => res.json({ message: 'Jerry! welcome to our api!' }
 router.get('/dicintro', (req, res) => {
 	DicIntro.find({}).then(dics => {res.json(dics)})
 })
+router.get('/word', (req, res) => {
+	console.log(req.query)
+	res.json({message:"hello, jerry!"})
+})
 
 //POST route for updating data
 router.post('/user', function (req, res, next) {

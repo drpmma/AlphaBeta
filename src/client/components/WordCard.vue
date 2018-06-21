@@ -11,15 +11,24 @@
 
 <script>
 export default {
-  props: {
-    name: String,
-    intro: Array
+  data() {
+    return {
+      name: 'software',
+      intro: ['n. 软件', 'n. 水泥,纽带,接合剂,牙骨质,补牙物,基石;vt. 接合,用水泥涂;vi. 接合起来', 'n. 仪式;adj. 正式的', 'n. 世纪，一百年，成百的东西']
+    }
   },
-//   methods: {
-//     startLearning() {
-//       console.log(this.$props.name)
-//     }
-//   }
+  mounted() {
+    const dic = this.$store.state.dic
+    const url = '/api/word?dic=' + dic
+    console.log(url)
+     this.$http.get(url)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
 };
 </script>
 
@@ -56,17 +65,14 @@ export default {
   margin-bottom: 1em;
 }
 
-/*
+
 @media screen and (max-width: 400px) {
-  .vocab-card{
-    height: 15em;
-    width: 70%;
-  }
+
 }
 @media screen and (min-width: 400px) {
-  .vocab-card {
-    height: 15em;
-    width: 25%;
+  .word-card {
+    width: 60%;
+    margin: 0 auto;
   }
-} */
+}
 </style>
