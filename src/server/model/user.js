@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const Schema = mongoose.Schema
+
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -11,7 +13,8 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-  }
+  },
+  words: [{type: Schema.Types.ObjectId, ref: 'wordrecord'}]
 });
 
 //authenticate input against database

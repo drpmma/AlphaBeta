@@ -1,16 +1,59 @@
 const express = require('express');
 const router = express.Router();
+const WordRecord = require('./model/wordRecord')
 const User = require('./model/user')
+const Vocab = require('./model/vocab')
 const DicIntro = require('./model/dicIntro')
-// const 
+const learnWord = require('./learnWord')
+
 
 router.get('/', (req, res) => res.json({ message: 'Jerry! welcome to our api!' }))
 router.get('/dicintro', (req, res) => {
 	DicIntro.find({}).then(dics => {res.json(dics)})
 })
 router.get('/word', (req, res) => {
-	console.log(req.query)
-	res.json({message:"hello, jerry!"})
+	console.log('query', req.query)
+	User.findOne({username:req.query.user})
+	.populate({
+		path: 'words',
+		populate: {
+			path: 'word',
+			model: 'dic'
+		}
+	})
+	.exec((err, data) => {
+		if (err) return console.log(err)
+		else res.json(learnWord(data.words))
+	})
+})
+
+router.post('/inital', (req, res) => {
+	User.findOne({username:req.body.user})
+		.then(result => {
+			if (result.words.length == 0) {
+				Vocab.find({type:req.body.dic}).then(result => {
+					WordRecord.initRecord(result)
+					const RecordID = WordRecord.initRecord(result)
+					User.update({username:req.body.user}, {
+						$push: {
+							words:{$each: RecordID},
+						}
+					}, 
+					err => {
+						if (err) 
+							console.log(err)
+						else 
+							console.log("Success")
+					})
+				})
+			}
+			else {
+				console.log(111)
+				// todo
+			}
+		})
+
+	return res.end()
 })
 
 //POST route for updating data

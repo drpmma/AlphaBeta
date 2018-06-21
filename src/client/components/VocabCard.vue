@@ -16,8 +16,22 @@ export default {
   },
   methods: {
     startLearning() {
-      this.$store.commit('saveDic', this.$props.name)
-      this.$router.push({path:'/home/study', query:{user: this.$store.state.token, dic:this.$props.name}})
+      this.$http
+        .post("/api/inital", {
+          user: this.$route.query.user,
+          dic: this.$props.name
+        })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      this.$store.commit("saveDic", this.$props.name);
+      this.$router.push({
+        path: "/home/study",
+        query: { user: this.$store.state.token, dic: this.$props.name }
+      });
     }
   }
 };
@@ -50,7 +64,7 @@ export default {
 }
 
 @media screen and (max-width: 400px) {
-  .vocab-card{
+  .vocab-card {
     height: 15em;
     width: 70%;
   }

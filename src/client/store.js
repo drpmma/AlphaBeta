@@ -16,7 +16,9 @@ let store = new Vuex.Store({
         },
         logout: (state) => {
             state.token = null
+            state.dic = null
             Cookie.delete('username')
+            Cookie.delete('lastdic')
         },
         saveDic: (state, data) => {
             state.dic = data

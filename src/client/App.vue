@@ -8,14 +8,21 @@
 </template>
 
 <script>
-  import NaviMenu from '@/client/components/NaviMenu.vue'
+import NaviMenu from "@/client/components/NaviMenu.vue";
+import Cookie from '@/client/cookie'
 
-  export default {
-  name: 'navi',
+export default {
+  name: "navi",
   components: {
     NaviMenu
+  },
+  created: function() {
+    if (this.$store.state.token === null)
+      this.$store.state.token = Cookie.get("username")
+    if (this.$store.state.lastdic === null)
+      this.$store.state.lastdic = Cookie.get("lastdic")
   }
-}
+};
 </script>
 
 <style>

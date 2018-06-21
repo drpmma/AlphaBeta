@@ -1,10 +1,8 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
-const mongoose = require('mongoose');
-// const session = require('express-session');
+const mongoose = require('mongoose');// const session = require('express-session');
 // const MongoStore = require('connect-mongo')(session);
-
 
 const app = express()
 //connect to MongoDB
@@ -32,7 +30,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 const root = path.resolve(__dirname, '..', '..')
 app.use(express.static(path.join(root, 'public')))
-
 const router = require('./router')
 app.use('/api', router)
 

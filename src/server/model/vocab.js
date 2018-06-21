@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const VocabScheme = new mongoose.Schema({
-    word: {
+    key: {
         type: String,
         required: true
     },
-    meaning: {
+    value: {
         type: String,
         required: true
     },
-    vocabType: {
+    type: {
         type: String,
         required: true,
     }

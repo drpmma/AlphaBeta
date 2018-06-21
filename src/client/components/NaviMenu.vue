@@ -7,7 +7,6 @@
 </template>
 
 <script>
-  import Cookie from '@/client/cookie'
   export default {
     data() {
       return {
@@ -22,10 +21,6 @@
         this.$router.push({path:route})
       }
     },
-    created: function() {
-      if (this.$store.state.token === null)
-        this.$store.state.token = Cookie.get('username')
-    }
   }
 </script>
 

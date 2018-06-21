@@ -9,9 +9,9 @@ function readVocabToDB(vocab, model, type) {
     let vocabData = []
     for (const key in vocab) {
         vocabData.push({
-            word: key,
-            meaning: vocab[key],
-            vocabType: type
+            key: key,
+            value: vocab[key],
+            type: type
         })
     }
     model.insertMany(vocabData)
