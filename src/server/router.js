@@ -9,42 +9,42 @@ const learnWord = require('./learnWord')
 
 router.get('/', (req, res) => res.json({ message: 'Jerry! welcome to our api!' }))
 router.get('/dicintro', (req, res) => {
-	DicIntro.find({}).then(dics => {res.json(dics)})
+	DicIntro.find({}).then(dics => { res.json(dics) })
 })
 router.get('/word', (req, res) => {
 	console.log('query', req.query)
-	User.findOne({username:req.query.user})
-	.populate({
-		path: 'words',
-		populate: {
-			path: 'word',
-			model: 'dic'
-		}
-	})
-	.exec((err, data) => {
-		if (err) return console.log(err)
-		else {
-			let word = learnWord(data.words)
-			Vocab.count().exec((err, count) => {
-				let random = Math.floor(Math.random() * count)
-				if (random + 3 > count) {
-					random = random - 3
-				}
-				Vocab.find({_id:{$ne: word._id}}).skip(random).limit(3).exec((err, data) => {
-					let falseValue = []
-					for (const item of data) {
-						falseValue.push({value: item.value, id: item._id})
+	User.findOne({ username: req.query.user })
+		.populate({
+			path: 'words',
+			populate: {
+				path: 'word',
+				model: 'dic'
+			}
+		})
+		.exec((err, data) => {
+			if (err) return console.log(err)
+			else {
+				let word = learnWord(data.words)
+				Vocab.count().exec((err, count) => {
+					let random = Math.floor(Math.random() * count)
+					if (random + 3 > count) {
+						random = random - 3
 					}
-					res.json({word, falseValue})
+					Vocab.find({ _id: { $ne: word._id } }).skip(random).limit(3).exec((err, data) => {
+						let falseValue = []
+						for (const item of data) {
+							falseValue.push({ value: item.value, id: item._id })
+						}
+						res.json({ word, falseValue })
+					})
 				})
-			})
-		}
-	})
+			}
+		})
 })
 
 router.post('/wordresult', (req, res) => {
-	const query = {word: req.body.wordID}
-	const update = req.body.isCorrect ? { $inc: {trueNumber: 1}} : { $inc: {falseNumber: 1}}
+	const query = { word: req.body.wordID }
+	const update = req.body.isCorrect ? { $inc: { trueNumber: 1 } } : { $inc: { falseNumber: 1 } }
 	WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
 		if (err) console.log(err)
 		else console.log(data)
@@ -53,33 +53,51 @@ router.post('/wordresult', (req, res) => {
 })
 
 router.post('/inital', (req, res) => {
-	User.findOne({username:req.body.user})
+	const dicType = req.body.dic
+	const username = req.body.user
+	User.findOne({ username: username })
 		.then(result => {
 			const userId = result._id
-			console.log(userId)
 			if (result.words.length == 0) {
-				Vocab.find({type:req.body.dic}).then(result => {
-					const RecordID = WordRecord.initRecord(result, userId)
-					User.update({username:req.body.user}, {
-						$push: {
-							words:{$each: RecordID},
-						}
-					}, 
-					err => {
-						if (err) 
-							console.log(err)
-						else 
-							console.log("Success")
-					})
-				})
+				Vocab.addDic(dicType, userId)
 			}
 			else {
-				console.log(111)
-				// todo
+				WordRecord.aggregate([
+					{
+						$unwind: "$word"
+					},
+					{
+						$lookup: {
+							from: "dics",
+							localField: "word",
+							foreignField: "_id",
+							as: "wordObject"
+						}
+					},
+					{
+						$group: {
+							_id: "$user",
+							type: { $addToSet: "$wordObject.type" }
+						}
+					}
+				], (err, data) => {
+					if (err) console.log(err)
+					else {
+						let typeArray = []
+						for (const sub of data[0].type) {
+							typeArray.push(sub[0])
+						}
+						if (data[0]._id.toString() === userId.toString() && typeArray.indexOf(dicType) == -1) {
+							Vocab.addDic(dicType, userId)
+						}
+						else {
+							console.log("alread added")
+						}
+					}
+				})
+				// return res.end()
 			}
 		})
-
-	return res.end()
 })
 
 //POST route for updating data
@@ -126,37 +144,5 @@ router.post('/user', function (req, res, next) {
 		return next(err);
 	}
 })
-
-
-// router.get('/profile', function (req, res, next) {
-// 	User.findById(req.session.userId)
-// 		.exec(function (error, user) {
-// 			if (error) {
-// 				return next(error);
-// 			} else {
-// 				if (user === null) {
-// 					const err = new Error('Not authorized! Go back!');
-// 					err.status = 400;
-// 					return next(err);
-// 				} else {
-// 					return res.send('<h1>Name: </h1>' + user.username + '<br><a type="button" href="/logout">Logout</a>')
-// 				}
-// 			}
-// 		});
-// });
-
-// // GET for logout logout
-// router.get('/logout', function (req, res, next) {
-// 	if (req.session) {
-// 		// delete session object
-// 		req.session.destroy(function (err) {
-// 			if (err) {
-// 				return next(err);
-// 			} else {
-// 				return res.redirect('/');
-// 			}
-// 		});
-// 	}
-// });
 
 module.exports = router;
