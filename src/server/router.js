@@ -45,21 +45,21 @@ router.get('/word', (req, res) => {
 router.post('/wordresult', (req, res) => {
 	const query = {word: req.body.wordID}
 	const update = req.body.isCorrect ? { $inc: {trueNumber: 1}} : { $inc: {falseNumber: 1}}
-	console.log(update)
 	WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
 		if (err) console.log(err)
 		else console.log(data)
 	})
-	console.log(req.body)
+	return res.end()
 })
 
 router.post('/inital', (req, res) => {
 	User.findOne({username:req.body.user})
 		.then(result => {
+			const userId = result._id
+			console.log(userId)
 			if (result.words.length == 0) {
 				Vocab.find({type:req.body.dic}).then(result => {
-					WordRecord.initRecord(result)
-					const RecordID = WordRecord.initRecord(result)
+					const RecordID = WordRecord.initRecord(result, userId)
 					User.update({username:req.body.user}, {
 						$push: {
 							words:{$each: RecordID},

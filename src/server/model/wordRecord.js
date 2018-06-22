@@ -5,10 +5,11 @@ let WordRecordSchema = new mongoose.Schema({
     _id: Schema.Types.ObjectId,
     trueNumber: {type: Number, required: true,},
     falseNumber: {type: Number, required: true,},
-    word: { type: Schema.Types.ObjectId, ref: 'dic' }
+    word: { type: Schema.Types.ObjectId, ref: 'dic' },
+    user: { type: Schema.Types.ObjectId, ref: 'user'}
 });
 
-WordRecordSchema.statics.initRecord = words => {
+WordRecordSchema.statics.initRecord = (words, userId) => {
     let RecordData = []
     let RecordID = []
     for (const word of words) {
@@ -17,7 +18,8 @@ WordRecordSchema.statics.initRecord = words => {
             _id: id,
             trueNumber: 0,
             falseNumber: 0,
-            word: word._id
+            word: word._id,
+            user: userId
         })
         RecordID.push({
             _id: id,
