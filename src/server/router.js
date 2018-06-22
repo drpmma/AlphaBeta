@@ -42,6 +42,17 @@ router.get('/word', (req, res) => {
 	})
 })
 
+router.post('/wordresult', (req, res) => {
+	const query = {word: req.body.wordID}
+	const update = req.body.isCorrect ? { $inc: {trueNumber: 1}} : { $inc: {falseNumber: 1}}
+	console.log(update)
+	WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
+		if (err) console.log(err)
+		else console.log(data)
+	})
+	console.log(req.body)
+})
+
 router.post('/inital', (req, res) => {
 	User.findOne({username:req.body.user})
 		.then(result => {

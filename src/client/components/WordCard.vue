@@ -5,11 +5,11 @@
     <span>{{key}}</span>
   </div>
      <div v-for="(answer, index) in intro" :key="answer.id">
-        <el-button class="select-item" :type="type[index]" :disabled="disabled" @click="selectAnswer(answer.id, index)" plain>{{answer.value}}</el-button>
+        <el-button class="select-item" :type="type[index]" :disabled="disabled.after" @click="selectAnswer(answer.id, index)" plain>{{answer.value}}</el-button>
     </div>
   </el-card>
-  <el-button type="danger" plain :disabled="passDisabled" @click="passTheWord">跳过</el-button> 
-  <el-button type="primary" plain :disabled="nextDisabled" @click="nextWord">下一个</el-button>
+  <el-button type="danger" plain :disabled="disabled.pass" @click="nextWord()">跳过</el-button> 
+  <el-button type="primary" plain :disabled="disabled.next" @click="nextWord()">下一个</el-button>
 </div>
 </template>
 
@@ -19,57 +19,90 @@ export default {
     return {
       key: "",
       value: "",
-      intro: [
-      ],
+      intro: [],
       id: 0,
       type: new Array(4).fill(""),
-      disabled: false,
-      passDisabled: false,
-      nextDisabled: true
+      disabled: this.initDisabled(),
+      isCorrect: false
     };
   },
   mounted() {
-    const url = "/api/word";
-    this.$http
-      .get(url, {
-        params: this.$route.query
-      })
-      .then(response => {
-        console.log(response);
-        this.key = response.data.word.key
-        this.id = response.data.word._id
-        this.value = response.data.word.value
-        this.intro = [...response.data.falseValue, {value: this.value, id: this.id}].sort(() => .5 - Math.random())
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    this.getTheWord();
   },
   methods: {
+    initDisabled() {
+      return {
+        after: false,
+        pass: false,
+        next: true,
+        isCorrect: false
+      };
+    },
+    setDisabled(isCorrect) {
+      this.disabled = {
+        after: true,
+        pass: true,
+        next: false,
+        isCorrect: isCorrect
+      };
+    },
+    getTheWord() {
+      const url = "/api/word";
+      this.$http
+        .get(url, {
+          params: this.$route.query
+        })
+        .then(response => {
+          console.log(response);
+          this.key = response.data.word.key;
+          this.id = response.data.word._id;
+          this.value = response.data.word.value;
+          this.intro = [
+            ...response.data.falseValue,
+            { value: this.value, id: this.id }
+          ].sort(() => 0.5 - Math.random());
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     selectAnswer(id, index) {
-      this.disabled = true
-      this.passDisabled = true
-      this.nextDisabled = false
       if (id === this.id) {
-        this.type[index] = "primary"
-      }
-      else {
-        this.type[index] = "danger"
+        this.type[index] = "primary";
+        this.setDisabled(true);
+        this.isCorrect = true;
+      } else {
+        this.setDisabled(false);
+        this.type[index] = "danger";
+        this.isCorrect = false;
         let objIndex = 0;
         for (const item of this.intro) {
           if (this.id == item.id) {
-            this.type[objIndex] = "primary"
-            break
+            this.type[objIndex] = "primary";
+            break;
           }
           objIndex++;
         }
       }
     },
-    passTheWord() {
-      
-    },
     nextWord() {
-
+      this.type.fill("");
+      this.disabled = this.initDisabled();
+      this.getTheWord();
+      this.postStudyResult();
+    },
+    postStudyResult() {
+      this.$http
+        .post("/api/wordresult", {
+          wordID: this.id,
+          isCorrect: this.isCorrect
+        })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };
@@ -86,7 +119,7 @@ export default {
 }
 
 .wrong-answer {
-  type: "danger"
+  type: "danger";
 }
 
 .text {
