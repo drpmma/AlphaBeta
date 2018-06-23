@@ -3,8 +3,11 @@
 <el-row>
     <el-col>
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="70px" class="demo-ruleForm">
+        <el-form-item label="email" prop="email">
+            <el-input v-model="ruleForm.email"></el-input>
+        </el-form-item>
         <el-form-item label="账号" prop="account">
-            <el-input v-model.number="ruleForm.account"></el-input>
+            <el-input v-model="ruleForm.account"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass">
             <el-input type="password" v-model="ruleForm.pass" auto-complete="off"></el-input>
@@ -25,6 +28,16 @@
 <script>
 export default {
   data() {
+    const checkEmail = (rule, value, callback) => {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!value) {
+        return callback(new Error("Email不能为空"));
+      }
+      else if (!re.test(String(value).toLowerCase())) {
+        return callback(new Error("Email不符合格式"))
+      }
+      callback()
+    }
     const checkAccount = (rule, value, callback) => {
       if (!value) {
         return callback(new Error("账号不能为空"));
@@ -54,11 +67,13 @@ export default {
     };
     return {
       ruleForm: {
+        email: "",
         account: "",
         pass: "",
         checkPass: ""
       },
       rules: {
+        email: [{ validator: checkEmail, trigger: "blur" }],
         account: [{ validator: checkAccount, trigger: "blur" }],
         pass: [{ validator: validatePass, trigger: "blur" }],
         checkPass: [{ validator: validatePass2, trigger: "blur" }]
@@ -71,6 +86,7 @@ export default {
         if (valid) {
           this.$http
             .post("/api/user", {
+              email: this.$data.ruleForm.email,
               username: this.$data.ruleForm.account,
               password: this.$data.ruleForm.pass,
               passwordConf: this.$data.ruleForm.checkPass

@@ -4,7 +4,7 @@
     <el-col>
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="40px" class="demo-ruleForm">
         <el-form-item label="账号" prop="account">
-            <el-input v-model.number="ruleForm.account"></el-input>
+            <el-input v-model="ruleForm.account"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass">
             <el-input type="password" v-model="ruleForm.pass" auto-complete="off"></el-input>

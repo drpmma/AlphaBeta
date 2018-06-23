@@ -158,11 +158,13 @@ router.post('/user', function (req, res, next) {
 		return next(err);
 	}
 
-	if (req.body.username &&
+	if (req.body.email && 
+		req.body.username &&
 		req.body.password &&
 		req.body.passwordConf) {
 
 		const userData = {
+			email: req.body.email,
 			username: req.body.username,
 			password: req.body.password
 		}
