@@ -63,6 +63,11 @@ router.beforeEach((to, from, next) => {
         query: query
       })
     }
+    else if(to.path == '/signin' || to.path == '/signup') {
+      next({
+        path: '/home',
+      })
+    }
     else {
       next()
     }

@@ -23,15 +23,15 @@ export default {
         })
         .then(response => {
           console.log(response);
+          this.$store.commit("saveDic", this.$props.name);
+          this.$router.push({
+            path: "/home/study",
+            query: { user: this.$store.state.token, dic: this.$props.name }
+          });
         })
         .catch(error => {
           console.log(error);
         });
-      this.$store.commit("saveDic", this.$props.name);
-      this.$router.push({
-        path: "/home/study",
-        query: { user: this.$store.state.token, dic: this.$props.name }
-      });
     }
   }
 };

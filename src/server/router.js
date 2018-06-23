@@ -26,7 +26,7 @@ router.get('/word', (req, res) => {
 		.exec((err, data) => {
 			if (err) return console.log(err)
 			else {
-				let word = learnWord(data.words)
+				let word = learnWord(data.words, req.query.dic)
 				Vocab.count().exec((err, count) => {
 					let random = Math.floor(Math.random() * count)
 					if (random + 3 > count) {
@@ -141,6 +141,7 @@ router.post('/inital', (req, res) => {
 						}
 						else {
 							console.log("alread added")
+							return res.end()
 						}
 					}
 				})

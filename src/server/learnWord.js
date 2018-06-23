@@ -4,10 +4,11 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
 
-function learnWord(data) {
+function learnWord(data, type) {
     let last = -10000, index = 0, range = 0;
-    const length = data.length
-    for (let word of data) {
+    const filterData = data.filter(value => value.word.type == type)
+    const length = filterData.length
+    for (let word of filterData) {
         word.learn = word.falseNumber - word.trueNumber
         if (range == 0 && last < word.learn)
             range = index;
@@ -16,11 +17,11 @@ function learnWord(data) {
     }
     if (range == 0) 
         range = getRandomInt(1, length)
-    data.sort((a, b) => {
+        filterData.sort((a, b) => {
         return b.learn - a.learn
     })
     const randomNumber = getRandomInt(0, range)
-    return data[randomNumber].word
+    return filterData[randomNumber].word
 }
 
 module.exports = learnWord
