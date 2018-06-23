@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Study from './views/Study.vue'
+import Note from './views/Note.vue'
 import About from './views/About.vue'
 import Signin from './views/Signin.vue'
 import Signup from './views/Signup.vue'
@@ -20,7 +21,8 @@ const router = new Router({
       component: Home,
       children: [
         {path: '', component: SelectVocab},
-        {path: 'study', component: Study}
+        {path: 'study', component: Study},
+        {path: 'note', component: Note}
       ]
     },
     {

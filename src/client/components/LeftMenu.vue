@@ -13,7 +13,7 @@
         <i class="el-icon-view"></i>
         <span slot="title">复习</span>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item index="3" @click="NavigateTo('/Home/Note')">
         <i class="el-icon-document"></i>
         <span slot="title">单词本</span>
       </el-menu-item>
@@ -59,6 +59,6 @@ export default {
   clear: none !important;
 }
 .left-items {
-  height: 1000px;
+  height: 50em;
 }
 </style>

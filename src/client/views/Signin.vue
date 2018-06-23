@@ -58,6 +58,10 @@ export default {
               password: this.$data.ruleForm.pass
             })
             .then(response => {
+              this.$message({
+                  message: '登录成功',
+                  type: 'success'
+              });
               this.$store.commit("login", this.$data.ruleForm.account);
               this.$router.push({ path: "/home" });
               console.log(response);

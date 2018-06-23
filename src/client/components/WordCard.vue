@@ -10,6 +10,7 @@
   </el-card>
   <el-button type="danger" plain :disabled="disabled.pass" @click="nextWord()">跳过</el-button> 
   <el-button type="primary" plain :disabled="disabled.next" @click="nextWord()">下一个</el-button>
+  <el-button icon="el-icon-edit" plain :disabled="disabled.addNote" @click="addToNote">笔记</el-button>
 </div>
 </template>
 
@@ -30,12 +31,30 @@ export default {
     this.getTheWord();
   },
   methods: {
+    addToNote() {
+      this.disabled.addNote = true
+      this.$message({
+          message: '已成功加入你的笔记',
+          type: 'success'
+      });
+      this.$http.post("/api/addnote", {
+          wordId: this.id,
+          user: this.$route.query.user
+        })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
     initDisabled() {
       return {
         after: false,
         pass: false,
         next: true,
-        isCorrect: false
+        isCorrect: false,
+        addNote: false
       };
     },
     setDisabled(isCorrect) {
@@ -43,7 +62,8 @@ export default {
         after: true,
         pass: true,
         next: false,
-        isCorrect: isCorrect
+        isCorrect: isCorrect,
+        addNote: false
       };
     },
     getTheWord() {
@@ -110,6 +130,7 @@ export default {
 
 
 <style>
+
 .select-item {
   word-wrap: break-word;
   word-break: break-all;

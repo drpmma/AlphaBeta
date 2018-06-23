@@ -4,7 +4,9 @@ const WordRecord = require('./model/wordRecord')
 const User = require('./model/user')
 const Vocab = require('./model/vocab')
 const DicIntro = require('./model/dicIntro')
+const Note = require('./model/note')
 const learnWord = require('./learnWord')
+const mongoose = require('mongoose')
 
 
 router.get('/', (req, res) => res.json({ message: 'Jerry! welcome to our api!' }))
@@ -50,6 +52,53 @@ router.post('/wordresult', (req, res) => {
 		else console.log(data)
 	})
 	return res.end()
+})
+
+router.get('/getnote', (req, res) => {
+	const username = req.query.user
+	User.findOne({ username: username })
+		.then(result => {
+			const userId = result._id
+			Note.find({user: userId})
+			.populate({
+				path: 'word',
+			})
+			.exec((err, data) => {
+				if (err) console.log(err)
+				else res.json(data)
+			})
+		})
+})
+
+router.post('/deletenote', (req, res) => {
+	console.log(req.body)
+	const query = req.body
+	Note.findOneAndDelete(query, (err, data) => {
+		if (err) console.log(err)
+		else res.send(data)
+	})
+})
+
+router.post('/addnote', (req, res) => {
+	const wordId = req.body.wordId
+	const username = req.body.user
+	console.log(req.body)
+	User.findOne({ username: username })
+		.then(result => {
+			const userId = result._id
+			const noteData = {
+				_id: new mongoose.Types.ObjectId(),
+				word: wordId,
+				user: userId
+			}
+			Note.create(noteData, error => {
+				if (error) {
+					return console(error);
+				} else {
+					return res.end()
+				}
+			});
+		})
 })
 
 router.post('/inital', (req, res) => {
