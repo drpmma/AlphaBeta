@@ -1,5 +1,5 @@
 <template>
-    <WordCard mode="study"/>
+    <WordCard mode="review"/>
 </template>
 
 <script>

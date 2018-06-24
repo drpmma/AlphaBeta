@@ -9,7 +9,7 @@
         <i class="el-icon-check"></i>
         <span slot="title">学习</span>
       </el-menu-item>
-      <el-menu-item index="2">
+      <el-menu-item index="2" @click="NavigateTo('/Home/Review')">
         <i class="el-icon-view"></i>
         <span slot="title">复习</span>
       </el-menu-item>

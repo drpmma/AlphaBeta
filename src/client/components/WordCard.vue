@@ -16,6 +16,9 @@
 
 <script>
 export default {
+  props: {
+    mode: String
+  },
   data() {
     return {
       key: "",
@@ -24,20 +27,23 @@ export default {
       id: 0,
       type: new Array(4).fill(""),
       disabled: this.initDisabled(),
-      isCorrect: false
+      isCorrect: false,
+      reviewIndex: 0
     };
   },
   mounted() {
-    this.getTheWord();
+    if (this.$props.mode == "study") this.getTheWord();
+    else if (this.$props.mode == "review") this.getReviewWord();
   },
   methods: {
     addToNote() {
-      this.disabled.addNote = true
+      this.disabled.addNote = true;
       this.$message({
-          message: '已成功加入你的笔记',
-          type: 'success'
+        message: "已成功加入你的笔记",
+        type: "success"
       });
-      this.$http.post("/api/addnote", {
+      this.$http
+        .post("/api/addnote", {
           wordId: this.id,
           user: this.$route.query.user
         })
@@ -66,21 +72,45 @@ export default {
         addNote: false
       };
     },
-    getTheWord() {
-      const url = "/api/word";
+    receiveData(data) {
+      this.key = data.word.key;
+      this.id = data.word._id;
+      this.value = data.word.value;
+      this.intro = [
+        ...data.falseValue,
+        { value: this.value, id: this.id }
+      ].sort(() => 0.5 - Math.random());
+    },
+    getReviewWord() {
+      this.reviewIndex++;
       this.$http
-        .get(url, {
+        .get("/api/reviewword", {
+          params: {...this.$route.query, index:this.reviewIndex}
+        })
+        .then(response => {
+          console.log(response);
+          if (response.data.word === -1) {
+            this.$message({
+              message: "您还没有背过单词",
+              type: "warning"
+            });
+          }
+          else {
+            this.receiveData(response.data);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getTheWord() {
+      this.$http
+        .get("/api/word", {
           params: this.$route.query
         })
         .then(response => {
           console.log(response);
-          this.key = response.data.word.key;
-          this.id = response.data.word._id;
-          this.value = response.data.word.value;
-          this.intro = [
-            ...response.data.falseValue,
-            { value: this.value, id: this.id }
-          ].sort(() => 0.5 - Math.random());
+          this.receiveData(response.data);
         })
         .catch(error => {
           console.log(error);
@@ -114,6 +144,7 @@ export default {
     postStudyResult() {
       this.$http
         .post("/api/wordresult", {
+          user: this.$route.query.user,
           wordID: this.id,
           isCorrect: this.isCorrect
         })
@@ -130,7 +161,6 @@ export default {
 
 
 <style>
-
 .select-item {
   word-wrap: break-word;
   word-break: break-all;

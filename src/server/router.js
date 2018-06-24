@@ -44,14 +44,71 @@ router.get('/word', (req, res) => {
 		})
 })
 
+
+router.get('/reviewword', (req, res) => {
+	console.log('query', req.query)
+	User.findOne({ username: req.query.user })
+		.populate({
+			path: 'words',
+			populate: {
+				path: 'word',
+				model: 'dic'
+			}
+		})
+		.exec((err, data) => {
+			if (err) return console.log(err)
+			else {
+				const words = data.words.filter(value => {
+					return (value.trueNumber + value.falseNumber) > 0
+				}).sort((a, b) => {
+					return (b.falseNumber - b.trueNumber) - (a.falseNumber - a.trueNumber) 
+				})
+				if (words.length == 0) {
+					res.json({word:-1})
+				}
+				else {
+					let index
+					let resetIndex
+					if (req.query.index < words.length) {
+						resetIndex = false
+						index = req.query.index
+					}
+					else {
+						resetIndex = true
+						index = words.length - 1
+					}
+					const word = words[index].word
+					Vocab.count().exec((err, count) => {
+						let random = Math.floor(Math.random() * count)
+						if (random + 3 > count) {
+							random = random - 3
+						}
+						Vocab.find({ _id: { $ne: word._id } }).skip(random).limit(3).exec((err, data) => {
+							let falseValue = []
+							for (const item of data) {
+								falseValue.push({ value: item.value, id: item._id })
+							}
+							res.json({ word, falseValue, resetIndex })
+						})
+					})
+				}
+			}
+		})
+})
+
 router.post('/wordresult', (req, res) => {
-	const query = { word: req.body.wordID }
-	const update = req.body.isCorrect ? { $inc: { trueNumber: 1 } } : { $inc: { falseNumber: 1 } }
-	WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
-		if (err) console.log(err)
-		else console.log(data)
+	User.findOne({username: req.body.user})
+	.then(result => {
+		const userId = result._id
+		const query = { word: req.body.wordID, user: userId}
+		const update = req.body.isCorrect ? { $inc: { trueNumber: 1 } } : { $inc: { falseNumber: 1 } }
+		WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
+			if (err) console.log(err)
+			else console.log(data)
+		})
+		return res.end()
 	})
-	return res.end()
+
 })
 
 router.get('/getnote', (req, res) => {
