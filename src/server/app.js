@@ -15,16 +15,6 @@ db.once('open', () => {
     console.log("connected!")
 });
 
-// app.use(session({
-//     secret: 'work hard',
-//     resave: true,
-//     saveUninitialized: false,
-//     store: new MongoStore({
-//         mongooseConnection: db
-//     })
-// }));
-
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
