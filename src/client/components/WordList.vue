@@ -1,5 +1,6 @@
 <template>
-    <el-table
+    <div>
+    <el-table class="word-list"
       :data="tableData"
       style="width: 80%">
       <el-table-column type="expand">
@@ -28,6 +29,7 @@
         label="类别">
       </el-table-column>
     </el-table>
+    </div>
 </template>
 
 <script>
@@ -78,6 +80,10 @@ export default {
 </script>
 
 <style>
+.word-list {
+  margin-left: 4.5em;
+  margin: 0 auto;
+}
 .demo-table-expand {
   font-size: 0;
 }

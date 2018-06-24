@@ -4,6 +4,8 @@ import Home from './views/Home.vue'
 import Study from './views/Study.vue'
 import Review from './views/Review.vue'
 import Note from './views/Note.vue'
+import Exam from './views/Exam.vue'
+import ExamResult from './views/ExamResult.vue'
 import About from './views/About.vue'
 import Signin from './views/Signin.vue'
 import Signup from './views/Signup.vue'
@@ -24,7 +26,9 @@ const router = new Router({
         {path: '', component: SelectVocab},
         {path: 'study', component: Study},
         {path: 'review', component: Review},
-        {path: 'note', component: Note}
+        {path: 'note', component: Note},
+        {path: 'exam', component: Exam},
+        {path: 'examresult', component: ExamResult}
       ]
     },
     {

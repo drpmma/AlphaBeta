@@ -5,8 +5,11 @@ const User = require('./model/user')
 const Vocab = require('./model/vocab')
 const DicIntro = require('./model/dicIntro')
 const Note = require('./model/note')
-const learnWord = require('./learnWord')
 const mongoose = require('mongoose')
+// functions
+const learnWord = require('./learnWord')
+const shuffle = require('./shuffle')
+
 
 
 router.get('/', (req, res) => res.json({ message: 'Jerry! welcome to our api!' }))
@@ -96,6 +99,38 @@ router.get('/reviewword', (req, res) => {
 		})
 })
 
+router.get('/exam', (req, res) => {
+	console.log('query', req.query)
+	User.findOne({ username: req.query.user })
+		.populate({
+			path: 'words',
+			populate: {
+				path: 'word',
+				model: 'dic'
+			}
+		}).exec((err, data) => {
+			if (err) return console.log(err)
+			else {
+				let records = shuffle(data.words).slice(0, 10)
+				let ids = records.map(value => value.word._id)
+				Vocab.count().exec((err, count) => {
+					let random = Math.floor(Math.random() * count)
+					if (random + 30 > count) {
+						random = random - 30
+					}
+					Vocab.find({ _id: { $nin: ids } }).skip(random).limit(30).exec((err, data) => {
+						let falseValue = []
+						for (const item of data) {
+							falseValue.push({ value: item.value, id: item._id })
+						}
+						falseValue = shuffle(falseValue)
+						res.json({ records, falseValue })
+					})
+				})
+			}
+		})
+})
+
 router.post('/wordresult', (req, res) => {
 	User.findOne({username: req.body.user})
 	.then(result => {
@@ -137,24 +172,27 @@ router.post('/deletenote', (req, res) => {
 })
 
 router.post('/addnote', (req, res) => {
-	const wordId = req.body.wordId
+	const wordIds = req.body.wordIds
 	const username = req.body.user
 	console.log(req.body)
 	User.findOne({ username: username })
 		.then(result => {
 			const userId = result._id
-			const noteData = {
-				_id: new mongoose.Types.ObjectId(),
-				word: wordId,
-				user: userId
-			}
-			Note.create(noteData, error => {
-				if (error) {
-					return console(error);
+			const noteData = wordIds.map(value => {
+				return {
+					_id: new mongoose.Types.ObjectId(),
+					word: value,
+					user: userId
+				}
+			})
+			Note.insertMany(noteData, (err, docs) => {
+				if (err) {
+					return console(err);
 				} else {
+					console.log(docs)
 					return res.end()
 				}
-			});
+			})
 		})
 })
 

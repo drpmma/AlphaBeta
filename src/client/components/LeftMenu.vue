@@ -17,7 +17,7 @@
         <i class="el-icon-document"></i>
         <span slot="title">单词本</span>
       </el-menu-item>
-      <el-menu-item index="4">
+      <el-menu-item index="4" @click="NavigateTo('/Home/Exam')">
         <i class="el-icon-edit-outline"></i>
         <span slot="title">考试</span>
       </el-menu-item>
@@ -47,7 +47,7 @@ export default {
     NavigateTo(route) {
       this.$router.push({ path: route });
     }
-  }
+  },
 };
 </script>
 

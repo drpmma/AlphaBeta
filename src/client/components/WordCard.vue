@@ -1,6 +1,6 @@
 <template>
 <div>
-  <el-card class="box-card word-card" shadow="hover">
+  <el-card class="box-card word-card" shadow="hover" v-loading="loading">
   <div slot="header" class="clearfix">
     <span>{{key}}</span>
   </div>
@@ -10,7 +10,7 @@
   </el-card>
   <el-button type="danger" plain :disabled="disabled.pass" @click="nextWord()">跳过</el-button> 
   <el-button type="primary" plain :disabled="disabled.next" @click="nextWord()">下一个</el-button>
-  <el-button icon="el-icon-edit" plain :disabled="disabled.addNote" @click="addToNote">笔记</el-button>
+  <el-button v-if="this.$props.mode !== 'exam'" icon="el-icon-edit" plain :disabled="disabled.addNote" @click="addToNote">笔记</el-button>
 </div>
 </template>
 
@@ -21,6 +21,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       key: "",
       value: "",
       intro: [],
@@ -28,23 +29,32 @@ export default {
       type: new Array(4).fill(""),
       disabled: this.initDisabled(),
       isCorrect: false,
-      reviewIndex: 0
+      reviewIndex: 0,
+      exam: {
+        data: [],
+        index: 0,
+        true: 0,
+      }
     };
   },
   mounted() {
     if (this.$props.mode == "study") this.getTheWord();
     else if (this.$props.mode == "review") this.getReviewWord();
+    else if (this.$props.mode == "exam") this.getExamWord();
   },
   methods: {
     addToNote() {
-      this.disabled.addNote = true;
-      this.$message({
-        message: "已成功加入你的笔记",
-        type: "success"
-      });
+      if (this.$props.mode !== "exam")
+      {
+        this.disabled.addNote = true;
+        this.$message({
+          message: "已成功加入你的笔记",
+          type: "success"
+        });
+      }
       this.$http
         .post("/api/addnote", {
-          wordId: this.id,
+          wordIds: [this.id],
           user: this.$route.query.user
         })
         .then(response => {
@@ -73,6 +83,7 @@ export default {
       };
     },
     receiveData(data) {
+      console.log(data)
       this.key = data.word.key;
       this.id = data.word._id;
       this.value = data.word.value;
@@ -80,6 +91,7 @@ export default {
         ...data.falseValue,
         { value: this.value, id: this.id }
       ].sort(() => 0.5 - Math.random());
+      this.loading = false
     },
     getReviewWord() {
       this.reviewIndex++;
@@ -116,6 +128,27 @@ export default {
           console.log(error);
         });
     },
+    getExamWord() {
+      this.$http
+        .get("/api/exam", {
+          params: this.$route.query
+        })
+        .then(response => {
+          console.log(response);
+          this.exam.data = response.data
+          this.setExamWord(this.exam.index++)
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    setExamWord(index) {
+      const data = this.exam.data
+      this.receiveData({
+        word: data.records[index].word,
+        falseValue: data.falseValue.slice(index, index + 3)
+      })
+    },
     selectAnswer(id, index) {
       if (id === this.id) {
         this.type[index] = "primary";
@@ -138,8 +171,28 @@ export default {
     nextWord() {
       this.type.fill("");
       this.disabled = this.initDisabled();
-      this.getTheWord();
-      this.postStudyResult();
+      if (this.$props.mode === "exam") {
+        this.exam.true += this.isCorrect ? 1 : 0
+        if (this.isCorrect === false)
+          this.addToNote()
+        if (this.exam.index === 10) {
+          this.$message({
+            message: "考试已结束",
+            type: "success"
+          });
+          this.$router.push({
+            path: 'examresult',
+            query: {true: this.exam.true}
+          })
+        }
+        else {
+          this.setExamWord(this.exam.index++)
+        }
+      }
+      else {
+        this.getTheWord();
+        this.postStudyResult();
+      }
     },
     postStudyResult() {
       this.$http
