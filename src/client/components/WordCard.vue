@@ -214,16 +214,13 @@ export default {
 
 
 <style>
+
 .select-item {
   word-wrap: break-word;
   word-break: break-all;
   white-space: normal !important;
   width: 100%;
   height: 6em;
-}
-
-.wrong-answer {
-  type: "danger";
 }
 
 .text {
