@@ -29,8 +29,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 const root = path.resolve(__dirname, '..', '..')
-app.use(express.static(path.join(root, 'public')))
+app.use(express.static(path.join(root, 'dist')))
 const router = require('./router')
 app.use('/api', router)
 
-app.listen(4000, () => console.log('Example app listening on port 4000!'))
+app.listen(4000, () => console.log('AlphaBeta app listening on port 4000.\nhttp://localhost:4000/'))
