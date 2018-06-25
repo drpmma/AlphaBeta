@@ -29,20 +29,8 @@ router.get('/word', (req, res) => {
 		.exec((err, data) => {
 			if (err) return console.log(err)
 			else {
-				let word = learnWord(data.words, req.query.dic)
-				Vocab.count().exec((err, count) => {
-					let random = Math.floor(Math.random() * count)
-					if (random + 3 > count) {
-						random = random - 3
-					}
-					Vocab.find({ _id: { $ne: word._id } }).skip(random).limit(3).exec((err, data) => {
-						let falseValue = []
-						for (const item of data) {
-							falseValue.push({ value: item.value, id: item._id })
-						}
-						res.json({ word, falseValue })
-					})
-				})
+				const records = learnWord(data.words, req.query.dic)
+				Vocab.findWordArray(records, res)
 			}
 		})
 })
@@ -71,30 +59,18 @@ router.get('/reviewword', (req, res) => {
 				}
 				else {
 					let index
-					let resetIndex
 					if (req.query.index < words.length) {
-						resetIndex = false
 						index = req.query.index
 					}
 					else {
-						resetIndex = true
-						index = words.length - 1
+						index = words.length - 10
 					}
-					let word = words[index].word;
-					[word.key, word.value] = [word.value, word.key]			// swap value and key for review
-					Vocab.count().exec((err, count) => {
-						let random = Math.floor(Math.random() * count)
-						if (random + 3 > count) {
-							random = random - 3
-						}
-						Vocab.find({ _id: { $ne: word._id } }).skip(random).limit(3).exec((err, data) => {
-							let falseValue = []
-							for (const item of data) {
-								falseValue.push({ value: item.key, id: item._id })	// add key to falseValue
-							}
-							res.json({ word, falseValue, resetIndex })
-						})
+					const records = words.slice(index, index + 10).map(value => {
+						[value.word.key, value.word.value] = [value.word.value, value.word.key]
+						return value
 					})
+					// swap value and key for review
+					Vocab.findWordArray(records, res, "review")
 				}
 			}
 		})
@@ -112,22 +88,8 @@ router.get('/exam', (req, res) => {
 		}).exec((err, data) => {
 			if (err) return console.log(err)
 			else {
-				let records = shuffle(data.words).slice(0, 10)
-				let ids = records.map(value => value.word._id)
-				Vocab.count().exec((err, count) => {
-					let random = Math.floor(Math.random() * count)
-					if (random + 30 > count) {
-						random = random - 30
-					}
-					Vocab.find({ _id: { $nin: ids } }).skip(random).limit(30).exec((err, data) => {
-						let falseValue = []
-						for (const item of data) {
-							falseValue.push({ value: item.value, id: item._id })
-						}
-						falseValue = shuffle(falseValue)
-						res.json({ records, falseValue })
-					})
-				})
+				const records = shuffle(data.words).slice(0, 10)
+				Vocab.findWordArray(records, res)
 			}
 		})
 })

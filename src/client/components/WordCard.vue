@@ -29,10 +29,9 @@ export default {
       type: new Array(4).fill(""),
       disabled: this.initDisabled(),
       isCorrect: false,
-      reviewIndex: 0,
+      index: 0,
+      wordData: [],
       exam: {
-        data: [],
-        index: 0,
         true: 0,
       }
     };
@@ -94,11 +93,11 @@ export default {
       this.loading = false
     },
     getReviewWord() {
-      this.reviewIndex++;
+      this.index++;
       this.loading = true
       this.$http
         .get("/api/reviewword", {
-          params: {...this.$route.query, index:this.reviewIndex}
+          params: {...this.$route.query, index:this.index}
         })
         .then(response => {
           console.log(response);
@@ -107,10 +106,10 @@ export default {
               message: "您还没有背过单词",
               type: "warning"
             });
-            this.loading = false
           }
           else {
-            this.receiveData(response.data);
+            this.wordData = response.data
+            this.setWord(this.index++)
           }
         })
         .catch(error => {
@@ -125,7 +124,8 @@ export default {
         })
         .then(response => {
           console.log(response);
-          this.receiveData(response.data);
+          this.wordData = response.data
+          this.setWord(this.index++)
         })
         .catch(error => {
           console.log(error);
@@ -139,15 +139,15 @@ export default {
         })
         .then(response => {
           console.log(response);
-          this.exam.data = response.data
-          this.setExamWord(this.exam.index++)
+          this.wordData = response.data
+          this.setWord(this.index++)
         })
         .catch(error => {
           console.log(error);
         });
     },
-    setExamWord(index) {
-      const data = this.exam.data
+    setWord(index) {
+      const data = this.wordData
       this.receiveData({
         word: data.records[index].word,
         falseValue: data.falseValue.slice(index, index + 3)
@@ -179,7 +179,7 @@ export default {
         this.exam.true += this.isCorrect ? 1 : 0
         if (this.isCorrect === false)
           this.addToNote()
-        if (this.exam.index === 10) {
+        if (this.index === 10) {
           this.$message({
             message: "考试已结束",
             type: "success"
@@ -189,18 +189,24 @@ export default {
             query: {true: this.exam.true}
           })
         }
-        else {
-          this.setExamWord(this.exam.index++)
-        }
-      }
-      else if (this.$props.mode === "review") {
-        this.getReviewWord()
-        this.postStudyResult()
       }
       else {
-        this.getTheWord()
-        this.postStudyResult()
+        if (this.$props.mode === "review") {
+          if (this.index === 10)
+          {
+            this.getReviewWord()
+            this.index = 0
+          }
+        }
+        else {
+          if (this.index === 10) {
+            this.getTheWord()
+            this.index = 0
+          }
+        }
       }
+      this.postStudyResult()
+      this.setWord(this.index++)
     },
     postStudyResult() {
       this.$http

@@ -16,12 +16,15 @@ function learnWord(data, type) {
         index++;
     }
     if (range == 0) 
-        range = getRandomInt(1, length)
+        range = getRandomInt(1, length - 10)
         filterData.sort((a, b) => {
         return b.learn - a.learn
     })
+    if (range + 10 > length) {
+        range -= 10
+    }
     const randomNumber = getRandomInt(0, range)
-    return filterData[randomNumber].word
+    return filterData.slice(randomNumber, randomNumber + 10)
 }
 
 module.exports = learnWord
