@@ -1,6 +1,6 @@
 <template>
     <div>
-    <el-table class="word-list"
+    <el-table class="word-list" v-loading="loading"
       :data="tableData"
       style="width: 80%">
       <el-table-column type="expand">
@@ -36,7 +36,8 @@
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      loading: true,
     };
   },
   mounted() {
@@ -52,6 +53,7 @@ export default {
             result.user = value.user
             return result
         })
+        this.loading = false
       })
       .catch(error => {
         console.log(error);

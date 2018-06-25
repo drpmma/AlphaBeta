@@ -95,6 +95,7 @@ export default {
     },
     getReviewWord() {
       this.reviewIndex++;
+      this.loading = true
       this.$http
         .get("/api/reviewword", {
           params: {...this.$route.query, index:this.reviewIndex}
@@ -106,6 +107,7 @@ export default {
               message: "您还没有背过单词",
               type: "warning"
             });
+            this.loading = false
           }
           else {
             this.receiveData(response.data);
@@ -116,6 +118,7 @@ export default {
         });
     },
     getTheWord() {
+      this.loading = true
       this.$http
         .get("/api/word", {
           params: this.$route.query
@@ -129,6 +132,7 @@ export default {
         });
     },
     getExamWord() {
+      this.loading = true
       this.$http
         .get("/api/exam", {
           params: this.$route.query
@@ -189,9 +193,13 @@ export default {
           this.setExamWord(this.exam.index++)
         }
       }
+      else if (this.$props.mode === "review") {
+        this.getReviewWord()
+        this.postStudyResult()
+      }
       else {
-        this.getTheWord();
-        this.postStudyResult();
+        this.getTheWord()
+        this.postStudyResult()
       }
     },
     postStudyResult() {

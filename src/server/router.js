@@ -64,10 +64,10 @@ router.get('/reviewword', (req, res) => {
 				const words = data.words.filter(value => {
 					return (value.trueNumber + value.falseNumber) > 0
 				}).sort((a, b) => {
-					return (b.falseNumber - b.trueNumber) - (a.falseNumber - a.trueNumber) 
+					return (b.falseNumber - b.trueNumber) - (a.falseNumber - a.trueNumber)
 				})
 				if (words.length == 0) {
-					res.json({word:-1})
+					res.json({ word: -1 })
 				}
 				else {
 					let index
@@ -80,7 +80,8 @@ router.get('/reviewword', (req, res) => {
 						resetIndex = true
 						index = words.length - 1
 					}
-					const word = words[index].word
+					let word = words[index].word;
+					[word.key, word.value] = [word.value, word.key]			// swap value and key for review
 					Vocab.count().exec((err, count) => {
 						let random = Math.floor(Math.random() * count)
 						if (random + 3 > count) {
@@ -89,7 +90,7 @@ router.get('/reviewword', (req, res) => {
 						Vocab.find({ _id: { $ne: word._id } }).skip(random).limit(3).exec((err, data) => {
 							let falseValue = []
 							for (const item of data) {
-								falseValue.push({ value: item.value, id: item._id })
+								falseValue.push({ value: item.key, id: item._id })	// add key to falseValue
 							}
 							res.json({ word, falseValue, resetIndex })
 						})
@@ -132,17 +133,17 @@ router.get('/exam', (req, res) => {
 })
 
 router.post('/wordresult', (req, res) => {
-	User.findOne({username: req.body.user})
-	.then(result => {
-		const userId = result._id
-		const query = { word: req.body.wordID, user: userId}
-		const update = req.body.isCorrect ? { $inc: { trueNumber: 1 } } : { $inc: { falseNumber: 1 } }
-		WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
-			if (err) console.log(err)
-			else console.log(data)
+	User.findOne({ username: req.body.user })
+		.then(result => {
+			const userId = result._id
+			const query = { word: req.body.wordID, user: userId }
+			const update = req.body.isCorrect ? { $inc: { trueNumber: 1 } } : { $inc: { falseNumber: 1 } }
+			WordRecord.findOneAndUpdate(query, update).exec((err, data) => {
+				if (err) console.log(err)
+				else console.log(data)
+			})
+			return res.end()
 		})
-		return res.end()
-	})
 
 })
 
@@ -151,14 +152,14 @@ router.get('/getnote', (req, res) => {
 	User.findOne({ username: username })
 		.then(result => {
 			const userId = result._id
-			Note.find({user: userId})
-			.populate({
-				path: 'word',
-			})
-			.exec((err, data) => {
-				if (err) console.log(err)
-				else res.json(data)
-			})
+			Note.find({ user: userId })
+				.populate({
+					path: 'word',
+				})
+				.exec((err, data) => {
+					if (err) console.log(err)
+					else res.json(data)
+				})
 		})
 })
 
@@ -254,7 +255,7 @@ router.post('/user', function (req, res, next) {
 		return next(err);
 	}
 
-	if (req.body.email && 
+	if (req.body.email &&
 		req.body.username &&
 		req.body.password &&
 		req.body.passwordConf) {
