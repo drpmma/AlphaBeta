@@ -103,7 +103,7 @@ export default {
           console.log(response);
           if (response.data.word === -1) {
             this.$message({
-              message: "您还没有背过单词",
+              message: "您还没有学习过足够的单词",
               type: "warning"
             });
           }

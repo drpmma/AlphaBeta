@@ -54,7 +54,7 @@ router.get('/reviewword', (req, res) => {
 				}).sort((a, b) => {
 					return (b.falseNumber - b.trueNumber) - (a.falseNumber - a.trueNumber)
 				})
-				if (words.length == 0) {
+				if (words.length < 10) {
 					res.json({ word: -1 })
 				}
 				else {
