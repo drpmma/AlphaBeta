@@ -63,13 +63,13 @@ export default {
   margin-bottom: 1em;
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
   .vocab-card {
     height: 15em;
     width: 70%;
   }
 }
-@media screen and (min-width: 400px) {
+@media screen and (min-width: 500px) {
   .vocab-card {
     height: 15em;
     width: 25%;
